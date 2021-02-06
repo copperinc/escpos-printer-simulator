@@ -22,7 +22,8 @@ public class PrinterServer extends Thread {
     public void run() {
         try {
             BufferedReader in = new BufferedReader(
-                    new InputStreamReader(socket.getInputStream(), "GBK"));//GBK charset is for textChinese support
+                   new InputStreamReader(socket.getInputStream(), "CP437"));
+                    // new InputStreamReader(socket.getInputStream(), "GBK"));//GBK charset is for textChinese support
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
             // Send a welcome message to the client.
