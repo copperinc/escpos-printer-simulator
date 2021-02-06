@@ -10,3 +10,4 @@ target
 /build
 /dist
 /out
+/.gradle

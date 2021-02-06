@@ -1,0 +1,27 @@
+apply plugin: 'java'
+
+
+group = "biz.iteksolutions"
+version = '0.1'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+    }   
+}
+
+jar {
+   manifest {
+      attributes 'Main-Class': 'biz.iteksolutions.Program'
+   }
+}
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    // Use 'jcenter' for resolving your dependencies.
+    // You can declare any Maven/Ivy/file repository here.
+    jcenter()
+}
+
