@@ -15,4 +15,9 @@ public class CommandTwoArgs extends Command {
         }
         return false;
     }
+    
+    @Override
+    public boolean done() {
+        return !(arg1 == null || arg2 == null);
+    }
 }

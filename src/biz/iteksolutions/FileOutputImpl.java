@@ -20,4 +20,9 @@ public class FileOutputImpl implements IPrinterOutput {
         }
         Helper.writeToFile(path, text);
     }
+    
+    @Override
+    public void clearPrinter() {
+        // do nothing
+    }
 }

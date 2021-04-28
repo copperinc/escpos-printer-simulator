@@ -98,6 +98,7 @@ public class PrinterOutputImpl extends javax.swing.JPanel implements IPrinterOut
 
         txtDisplay.setEditable(false);
         txtDisplay.setColumns(20);
+        txtDisplay.setFont(new java.awt.Font("DejaVu Sans Mono", 0, 15)); // NOI18N
         txtDisplay.setRows(5);
         txtDisplay.setName("txtDisplay"); // NOI18N
         jScrollPane1.setViewportView(txtDisplay);
@@ -125,7 +126,7 @@ public class PrinterOutputImpl extends javax.swing.JPanel implements IPrinterOut
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
-        txtDisplay.setText("");
+        clearPrinter();
     }//GEN-LAST:event_btnClearActionPerformed
 
 
@@ -149,6 +150,11 @@ public class PrinterOutputImpl extends javax.swing.JPanel implements IPrinterOut
         }
     }
 
+    @Override
+    public void clearPrinter() {
+        txtDisplay.setText("");
+    }
+    
     private void writeToFile(String text) {
         Helper.writeToFile(tbFile.getText(), text);
     }

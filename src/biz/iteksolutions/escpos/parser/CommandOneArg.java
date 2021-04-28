@@ -12,4 +12,9 @@ public class CommandOneArg extends Command {
         }
         return false;
     }
+    
+    @Override
+    public boolean done() {
+        return (arg != null);
+    }    
 }

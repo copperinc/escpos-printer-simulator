@@ -15,7 +15,8 @@ public class Printer extends Command {
     private List<Command> commands;
     private Map<Character, String> search;
     private List<Character> searchStack;
-
+    private Command candidate;
+    
     public Printer() {
         commands = new ArrayList<>();
         searchStack = new ArrayList<>();
@@ -26,50 +27,56 @@ public class Printer extends Command {
         return commands;
     }
 
+    /// Return only completed commands
+    public List<Command> popCommands() {
+        List<Command> out = new ArrayList<>();      
+        while (commands.size() > 0) {
+            var cmd = commands.get(0);
+            if (cmd.done()) {
+                out.add(cmd);
+                commands.remove(0);
+            } else {
+                break;
+            }
+        }
+        return out;
+    }
+    
     public void reset() {
-        search = null;
+        search = Command.commandsMap;
         searchStack.clear();
+        candidate = null;
     }
 
+    private void pushCandidate() {
+        commands.add(candidate);
+        reset(); // nulls candidate 
+    }
+    
     @Override
     public boolean addChar(Character c) {
-        if (searchStack.size() > 0) {
-            navigateCommand(c);
+        searchStack.add(c);
+        if (candidate != null) {
+            if (candidate.addChar(c)) {
+                if (candidate.done()) {
+                    pushCandidate();
+                }
+                return true;
+            } else {
+                // rejected char (mostly for text candidate)
+                pushCandidate();
+                searchStack.add(c); // re-add char
+            }
+        }
+        
+        if (!search.keySet().contains(c)) {
+            var tc = new TextCommand();
+            handleTextCommand(tc);
+            candidate = tc;
+            candidate.addChar(c);
             return true;
         }
-
-        if (commands.size() > 0) {
-            Command top = commands.get(commands.size() - 1);
-            boolean ret = top.addChar(c);
-            if (ret) {
-                return true;
-            }
-        }
-
-        if (commands.isEmpty() || !(commands.get(commands.size() - 1) instanceof TextCommand)) {
-            TextCommand top = new TextCommand();
-
-            //handle special content command
-            handleTextCommand(top);
-
-            if (top.addChar(c)) {
-                commands.add(top);
-                return true;
-            }
-        }
-
-        search = Command.commandsMap;
-        return navigateCommand(c);
-    }
-
-    private boolean navigateCommand(Character c) {
-        searchStack.add(c);
-        if (!search.keySet().contains(c)) {
-            System.out.println("Warning - Unknown command: " + c);
-            reset();
-            return false;
-        }
-
+        
         String type = search.get(c);
         if (type.indexOf("Arr") > 0) {
             switch (type) {
@@ -92,9 +99,14 @@ public class Printer extends Command {
             Constructor<?> ctor = clazz.getConstructor();
             Command cmd = (Command) ctor.newInstance();
 
-            commands.add(cmd);
-            reset();
-            return true;
+            if (cmd.done()) {
+                commands.add(cmd);
+                reset();
+                return true;
+            } else {
+                candidate = cmd;
+                return false;
+            }
         } catch (Exception e) {
             System.out.println("Class has problem: " + type);
             e.printStackTrace();

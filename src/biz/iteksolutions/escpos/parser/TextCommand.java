@@ -6,9 +6,10 @@ import java.util.List;
 public class TextCommand extends Command implements IContentOutput {
 
     private boolean isChinese = false;
-
+    private boolean isDone = false;
+    
     private StringBuilder sb;
-
+    
     public TextCommand() {
         sb = new StringBuilder();
     }
@@ -16,6 +17,7 @@ public class TextCommand extends Command implements IContentOutput {
     @Override
     public boolean addChar(Character c) {
         if (Command.commandsMap.get(c) != null) {
+            isDone = true;
             return false;
         }
         sb.append(c);
@@ -30,5 +32,10 @@ public class TextCommand extends Command implements IContentOutput {
     public String getText() {
         String result = sb.toString();
         return result;
+    }
+    
+    @Override
+    public boolean done() {
+        return isDone;
     }
 }

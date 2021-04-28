@@ -20,4 +20,9 @@ public class CommandThreeArgs extends Command {
         }
         return false;
     }
+    
+    @Override
+    public boolean done() {
+        return !(arg1 == null || arg2 == null || arg3 == null);
+    }    
 }

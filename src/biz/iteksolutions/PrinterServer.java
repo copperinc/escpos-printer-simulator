@@ -21,6 +21,7 @@ public class PrinterServer extends Thread {
     @Override
     public void run() {
         try {
+       
             BufferedReader in = new BufferedReader(
                    new InputStreamReader(socket.getInputStream(), "CP437"));
                     // new InputStreamReader(socket.getInputStream(), "GBK"));//GBK charset is for textChinese support
@@ -62,7 +63,8 @@ public class PrinterServer extends Thread {
                     for (Command obj : po.getCommands()) {
                         if (obj instanceof IContentOutput) {
                             IContentOutput container = (IContentOutput) obj;
-                            display.setText(container.getText());
+                            var txt = container.getText();
+                            display.setText(txt);
                         }
                     }
                 }

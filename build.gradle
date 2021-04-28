@@ -18,6 +18,22 @@ jar {
    }
 }
 
+
+task run(type: JavaExec) {
+  group = 'Run' // <-- change the name as per your need
+  description = 'Run manufacturing print test exe'
+
+  classpath sourceSets.main.runtimeClasspath // <-- Don't change this
+  main = "com.copper.manufacturing.PrintTestMain"
+  //args "arg1", "arg2"
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    options.compilerArgs << "-Xdiags:verbose"
+}
+
 // In this section you declare where to find the dependencies of your project
 repositories {
     // Use 'jcenter' for resolving your dependencies.

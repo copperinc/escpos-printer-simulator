@@ -40,7 +40,7 @@ public abstract class Command {
         commandsMap.put(FF, EscposCommand.class.getName());
         commandsMap.put(GS, GS_COMMAND_ARR);
         commandsMap.put(FS, TextChineseCommand.class.getName());
-        commandsMap.put(DLE, EscposCommand.class.getName());
+        commandsMap.put(DLE, DleCommand.class.getName());
         commandsMap.put(CAN, EscposCommand.class.getName());
 
         escCommandsMap.put('@', InitCommand.class.getName());
@@ -88,8 +88,12 @@ public abstract class Command {
 
     }
 
+    /// returns true of more characters are acceptable, false if rejected
     public boolean addChar(Character c) {
         return false;
     }
 
+    public boolean done() {
+        return true;
+    }
 }
