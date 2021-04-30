@@ -1,4 +1,32 @@
-# escpos-printer-simulator
+# Copper Cord device tester
+
+Build a new main class, updated the parser to be more robust for
+framing commands from a live host device connected to a serial port.
+
+Added a new gui panel with controls changes for testing.
+
+## Run notes
+
+The build will create a jar file: ./build/libs/copper-cord-print-tester-x.y.jar
+
+The program should be runnable via java -jar copper-cord-print-tester-x.y.jar
+
+
+## Build notes
+The Gui panels and as well as the new Copper specific
+dialog was laid out w/ the netbeans IDE
+
+A gradle build config was added, allowing command line builds
+
+gradle build : will build the jar file
+gradle run   : will build and run the tester
+
+
+
+
+# Previous escpos-printer-simulator notes
+
+## escpos-printer-simulator
 ESC/POS Printer simulator written in Java.  
 This provide Swing GUI to display receipts and also write content to a file - access through web url.  
 The idea comes from JavaPos printer simulator and from [escpos-tools](https://github.com/receipt-print-hq/escpos-tools), a PHP library.  
