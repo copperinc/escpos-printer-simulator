@@ -1,8 +1,7 @@
 apply plugin: 'java'
 
-
-group = "biz.iteksolutions"
-version = '0.1'
+group = "com.copper"
+version = '0.2'
 
 sourceSets {
     main {
@@ -13,14 +12,20 @@ sourceSets {
 }
 
 jar {
-   manifest {
-      attributes 'Main-Class': 'biz.iteksolutions.Program'
-   }
+    manifest {
+      //attributes 'Main-Class': 'biz.iteksolutions.Program'
+      attributes 'Main-Class': 'com.copper.manufacturing.PrintTestMain'
+    }
+    
+    // this bundles dependent jars into the output jar file
+    from { 
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } 
+    }
 }
 
 
 task run(type: JavaExec) {
-  group = 'Run' // <-- change the name as per your need
+  group = 'Run'
   description = 'Run manufacturing print test exe'
 
   classpath sourceSets.main.runtimeClasspath // <-- Don't change this
@@ -28,9 +33,33 @@ task run(type: JavaExec) {
   //args "arg1", "arg2"
 }
 
+task run_nodevice(type: JavaExec) {
+  group = 'Run'
+  description = 'Run manufacturing print test exe with test input'
+
+  classpath sourceSets.main.runtimeClasspath // <-- Don't change this
+  main = "com.copper.manufacturing.PrintTestMain"
+  args "--test-no-dev"
+}
+
+task netjar(type: Jar) {
+    group = 'Build'
+    description = 'Build old network based simulator server'
+    baseName = 'escpos-printer-simulator'
+    
+    with jar
+    manifest {
+        attributes 'Main-Class': 'biz.iteksolutions.Program'
+    }
+
+
+}
+
+
 compileJava {
     options.encoding = 'UTF-8'
-    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    options.compilerArgs << "-Xlint:unchecked" 
+    options.compilerArgs << "-Xlint:deprecation"
     options.compilerArgs << "-Xdiags:verbose"
 }
 
@@ -38,6 +67,7 @@ compileJava {
 repositories {
     // Use 'jcenter' for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
+    // ac: jcenter is deprecated?
     //jcenter()
 }
 
