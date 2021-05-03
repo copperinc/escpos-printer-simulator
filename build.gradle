@@ -33,6 +33,7 @@ task run(type: JavaExec) {
   //args "arg1", "arg2"
 }
 
+
 task run_nodevice(type: JavaExec) {
   group = 'Run'
   description = 'Run manufacturing print test exe with test input'
@@ -41,6 +42,18 @@ task run_nodevice(type: JavaExec) {
   main = "com.usecopper.manufacturing.PrintTestMain"
   args "--test-no-dev"
 }
+
+
+task debug(dependsOn: classes, type: JavaExec) {
+    group = 'Run'
+    main = "com.usecopper.manufacturing.PrintTestMain"
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    ignoreExitValue = true
+    debug = true
+    args "--test-no-dev"
+}
+
 
 task netjar(type: Jar) {
     group = 'Build'
@@ -51,8 +64,6 @@ task netjar(type: Jar) {
     manifest {
         attributes 'Main-Class': 'biz.iteksolutions.Program'
     }
-
-
 }
 
 
