@@ -1,6 +1,6 @@
 apply plugin: 'java'
 
-group = "com.copper"
+group = "com.usecopper"
 version = '0.2'
 
 sourceSets {
@@ -14,7 +14,7 @@ sourceSets {
 jar {
     manifest {
       //attributes 'Main-Class': 'biz.iteksolutions.Program'
-      attributes 'Main-Class': 'com.copper.manufacturing.PrintTestMain'
+      attributes 'Main-Class': 'com.usecopper.manufacturing.PrintTestMain'
     }
     
     // this bundles dependent jars into the output jar file
@@ -29,7 +29,7 @@ task run(type: JavaExec) {
   description = 'Run manufacturing print test exe'
 
   classpath sourceSets.main.runtimeClasspath // <-- Don't change this
-  main = "com.copper.manufacturing.PrintTestMain"
+  main = "com.usecopper.manufacturing.PrintTestMain"
   //args "arg1", "arg2"
 }
 
@@ -38,7 +38,7 @@ task run_nodevice(type: JavaExec) {
   description = 'Run manufacturing print test exe with test input'
 
   classpath sourceSets.main.runtimeClasspath // <-- Don't change this
-  main = "com.copper.manufacturing.PrintTestMain"
+  main = "com.usecopper.manufacturing.PrintTestMain"
   args "--test-no-dev"
 }
 

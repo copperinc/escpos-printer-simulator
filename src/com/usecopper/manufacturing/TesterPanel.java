@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.copper.manufacturing;
+package com.usecopper.manufacturing;
 
 import biz.iteksolutions.IPrinterOutput;
-import static com.copper.manufacturing.PrintTestMain.setupPort;
+import static com.usecopper.manufacturing.PrintTestMain.setupPort;
 import com.fazecast.jSerialComm.SerialPort;
 import java.util.ArrayList;
 
