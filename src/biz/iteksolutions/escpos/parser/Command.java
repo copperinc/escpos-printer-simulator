@@ -10,7 +10,7 @@ public abstract class Command {
     public static final char CR = 0x0D;
     public static final char NUL = 0x00;
     public static final char HT = 0x09;
-    public static final char FF = 0x0C;
+    public static final char FF = '\u0012'; //0x0C;
     public static final char GS = 0x1D;
     public static final char FS = 0x1C;
     public static final char DLE = 0x10;
@@ -37,7 +37,7 @@ public abstract class Command {
         commandsMap.put(CR, CarriageReturnCommand.class.getName());
         commandsMap.put(NUL, EscposCommand.class.getName());
         commandsMap.put(HT, EscposCommand.class.getName());
-        commandsMap.put(FF, EscposCommand.class.getName());
+        commandsMap.put(FF, FormFeedCommand.class.getName());
         commandsMap.put(GS, GS_COMMAND_ARR);
         commandsMap.put(FS, TextChineseCommand.class.getName());
         commandsMap.put(DLE, DleCommand.class.getName());

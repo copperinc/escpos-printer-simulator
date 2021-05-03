@@ -55,7 +55,7 @@ public class DleCommand extends Command {
         remaining -= 1;
 //        System.out.print(
 //                String.format(" (dle addchar 0x%02x ib %d) ", bc, remaining));
-        return (remaining > 0);
+        return (remaining >= 0);
     }  
     
     @Override

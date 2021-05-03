@@ -59,7 +59,7 @@ public class PrintTestMain {
                 do_fileio_test = true;
             }
         }
-//        do_fileio_test = true;
+        do_fileio_test = true;
         
         try {
             IPrinterOutput gui = null;
