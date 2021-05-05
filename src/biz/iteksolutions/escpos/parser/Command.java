@@ -10,7 +10,7 @@ public abstract class Command {
     public static final char CR = 0x0D;
     public static final char NUL = 0x00;
     public static final char HT = 0x09;
-    public static final char FF = '\u0012'; //0x0C;
+    public static final char FF = 0x0C;
     public static final char GS = 0x1D;
     public static final char FS = 0x1C;
     public static final char DLE = 0x10;
