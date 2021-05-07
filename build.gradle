@@ -1,7 +1,7 @@
 apply plugin: 'java'
 
 group = "com.usecopper"
-version = '0.2.1'
+version = '0.2.2'
 
 sourceSets {
     main {
@@ -34,16 +34,6 @@ task run(type: JavaExec) {
 }
 
 
-task run_nodevice(type: JavaExec) {
-  group = 'Run'
-  description = 'Run manufacturing print test exe with test input'
-
-  classpath sourceSets.main.runtimeClasspath // <-- Don't change this
-  main = "com.usecopper.manufacturing.PrintTestMain"
-  args "--test-no-dev"
-}
-
-
 task debug(dependsOn: classes, type: JavaExec) {
     group = 'Run'
     main = "com.usecopper.manufacturing.PrintTestMain"
@@ -51,7 +41,32 @@ task debug(dependsOn: classes, type: JavaExec) {
     standardInput = System.in
     ignoreExitValue = true
     debug = true
-    args "--test-no-dev"
+    //args = ["--test-no-dev", "selftest-in.bin"]
+    //args = ["--test-no-dev", "selftest-in-echoerr.bin"]
+}
+
+
+task debug_testclr(dependsOn: classes, type: JavaExec) {
+    group = 'Run'
+    description = 'Run dbg, all expected to pass'    
+    main = "com.usecopper.manufacturing.PrintTestMain"
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    ignoreExitValue = true
+    debug = true
+    args = ["--test-no-dev", "selftest-in.bin"]
+}
+
+
+task debug_testeerr(dependsOn: classes, type: JavaExec) {
+    group = 'Run'
+    description = 'Run dbg, test file triggers echo warnings, but not expected to trigger echo test fail'
+    main = "com.usecopper.manufacturing.PrintTestMain"
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    ignoreExitValue = true
+    debug = true
+    args = ["--test-no-dev", "selftest-in-echoerr.bin"]
 }
 
 

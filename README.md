@@ -3,6 +3,17 @@
 Build a new main class, updated the parser to be more robust for
 framing commands from a live host device connected to a serial port.
 
+## Version Notes
+
+### V0.2.2
+* Parser fixes to recognize two byte cut commands
+* Added test for cut command on provision
+* Added test for unintended echo replies
+
+### V0.2.1
+Parser fixes for unprintable characters
+
+### V0.2
 Added a new gui panel with controls changes for testing.
 
 ## Run notes

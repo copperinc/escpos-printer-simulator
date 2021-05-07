@@ -7,6 +7,7 @@ package com.usecopper.manufacturing;
 
 import biz.iteksolutions.IPrinterOutput;
 import biz.iteksolutions.escpos.parser.Command;
+import biz.iteksolutions.escpos.parser.CutCommand;
 import biz.iteksolutions.escpos.parser.DleCommand;
 import biz.iteksolutions.escpos.parser.EscposCommand;
 import biz.iteksolutions.escpos.parser.IContentOutput;
@@ -35,7 +36,8 @@ public class PrinterThread extends Thread {
     final private InputStream dev_in;
     final private OutputStream dev_out;
     final private boolean verbose;
-    
+    final private static byte STATUS_REPLY = (byte)0x12;
+            
     public PrinterThread(IPrinterOutput display, 
             InputStream dev_in, OutputStream dev_out) {
         
@@ -76,6 +78,64 @@ public class PrinterThread extends Thread {
         System.out.println(str);
     }    
     
+    private void wait_a_little() {
+        try{
+            Thread.sleep(100);
+        }
+        catch(InterruptedException e){
+            System.out.println(e);
+        }  
+    }
+    
+    private void runEchoTest(BufferedReader in) {
+
+        guiPrint("\n## Test 4: Starting Echotest\n"); 
+
+        var rdbuf = new char[8];
+        int numRead;
+        
+        try {
+            // try to clear the buffer
+            var tries = 30;
+            while (tries > 0 && in.ready()) {
+                if (tries == 30) {
+                    guiPrint("  == clearing buffer\n");
+                }
+                numRead = in.read(rdbuf, 0, rdbuf.length);
+//                guiPrint(String.format("DBG: nr %d : 0x%x\n", numRead, (byte)rdbuf[0]));
+                if (numRead == 0) {
+                    tries = 0;
+                } else {
+                    tries--;
+                }
+            }
+
+            // test write - hopefully doesn't confuse the fw too much
+            byte[] reply = { STATUS_REPLY };
+            dev_out.write(reply, 0, 1);
+            wait_a_little();
+            if (in.ready()) {
+                numRead = in.read(rdbuf, 0, rdbuf.length);
+            } else {
+                numRead = 0;
+            }
+//            guiPrint(String.format("DBG: nr %d : 0x%x\n", numRead, (byte)rdbuf[0]));
+
+            if ((1 == numRead) && (rdbuf[0] == (char)STATUS_REPLY)) {
+                guiPrint("\n!! Test 4: Fail Echotest !!\n");    
+            } else {
+                guiPrint("\n== Test 4: Pass Echotest\n"); 
+            }
+        } 
+        catch (SerialPortIOException sio) {
+            // exit loop
+            guiPrint("== Port closed\n");
+        }
+        catch (IOException ex) {
+            ex.printStackTrace(System.err);
+        }      
+    }
+    
     /**
      * Process inputs and outputs to a Copper Cord device
      * 
@@ -96,14 +156,25 @@ public class PrinterThread extends Thread {
 
         Printer po = new Printer();
         var rdbuf = new char[8];
-        
+
         int icmds = 0;
         int ncmds = 0;
        
+        boolean enable_echotest = true;
+        boolean echotest_reply_written = false;
+        int test_step = 0;
+        int numRead;
         try {
+            
             while (true) {
-
-                int numRead = in.read(rdbuf, 0, rdbuf.length);
+                if (!in.ready() && enable_echotest && test_step == 3) {
+                    runEchoTest(in);
+                    test_step = 0; 
+                    continue;
+                } else {
+                    numRead = in.read(rdbuf, 0, rdbuf.length);
+                }
+//                guiPrint(String.format("DBG: nr %d : 0x%x\n", numRead, (byte)rdbuf[0]));                
                 for (int i = 0; i < numRead; i++) {
                     char ch = rdbuf[i];
                     po.addChar(ch);
@@ -121,12 +192,18 @@ public class PrinterThread extends Thread {
                     if (verbose) {
                         System.out.print("\nc" + icmds + " ");
                     }
-
+                    
                     boolean textable = false;
                     if (obj instanceof IContentOutput) {
                         IContentOutput container = (IContentOutput) obj;
                         var txt = container.getText();
-                        guiPrint(txt);
+                        
+                        if (echotest_reply_written && txt.length() == 1 && 
+                                txt.charAt(0) == (char)STATUS_REPLY) {
+                            guiPrint("\n## Warning: possible echo failure\n");
+                        } else {
+                            guiPrint(txt);
+                        }
                         textable = true;
                         
                         devlogPrintln("recv displayable cmd, " + 
@@ -139,7 +216,9 @@ public class PrinterThread extends Thread {
                         final String pass_str = "▀▀▀▀▀▀▀ ▀  ▀▀▀ ▀▀▀      ▀▀ ▀  ▀▀";                        
                         if (txt.length() >= pass_str.length()) {
                             if (txt.contains(pass_str)) {
-                                guiPrint("\n== Final Test: Pass\n");
+                                guiPrint("\n== Test 2: Pass Output Test\n");
+                                test_step += 1;                                
+                                echotest_reply_written = false; // reset echo reply test
                             }
                         }
                     }                 
@@ -155,17 +234,23 @@ public class PrinterThread extends Thread {
                         var msg = String.format("recv dle cmd %x %x", sc, nv);
                         devlogPrintln(msg);
 
-                        byte[] reply = { (byte)0x12 };
+                        byte[] reply = { STATUS_REPLY };
                         devout.write(reply, 0, 1);
-                        
                         devlogPrintln("  reply wrtten");
 
+                        echotest_reply_written = true;
+                        
                         if (cmd.getNval() == 4) {
-                            guiPrint("\n== Test 1 Pass: Printer Initialized\n");
+                            guiPrint("\n== Test 1: Pass, Printer Initialized\n");
+                            test_step = 1;
                         }
                     } else if (obj instanceof EscposCommand) {
                         devlogPrintln("recv excpos cmd");
 
+                    } else if (obj instanceof CutCommand) {
+                        guiPrint("\n== Test 3: Pass, Received Cut Cmd\n");
+                        test_step += 1;
+                        
                     } else if (!textable) {
                         // no action needed
                         String cmdtype;
@@ -177,6 +262,7 @@ public class PrinterThread extends Thread {
                         devlogPrintln("recv unhandled cmd " + cmdtype);
                     }
                 } // for cmd : Commands
+                
             } // while (true)  
         }
         catch (SerialPortIOException sio) {

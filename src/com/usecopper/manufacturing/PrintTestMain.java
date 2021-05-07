@@ -54,12 +54,19 @@ public class PrintTestMain {
         boolean do_gui = true;
         boolean do_fileio_test = false;
         
-        for (var arg : args) {
+        String test_name = null;
+        for (var i = 0; i < args.length; i++) {
+            var arg = args[i];
             if ("--test-no-dev".equals(arg)) {
                 do_fileio_test = true;
+                
+                if (args.length > i + 1) {
+                    test_name = args[i+1];
+                } else {
+                    test_name = "selftest-in.bin";
+                }
             }
         }
-//        do_fileio_test = true;
         
         try {
             IPrinterOutput gui = null;
@@ -68,8 +75,8 @@ public class PrintTestMain {
                 gui = setupGui();
             }
 
-            if (do_fileio_test) {
-                File f = new File("selftest-in.bin");
+            if (do_fileio_test && test_name != null) {
+                File f = new File(test_name);
                 FileInputStream fin = new FileInputStream(f);
                 var out = OutputStream.nullOutputStream();
 
