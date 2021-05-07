@@ -6,12 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Printer extends Command {
-
-    public static final int CUT_FULL = 48;
-    public static final int CUT_HALF = 49;
-    public static final int CUT_FULL_FEED = 65;
-    public static final int CUT_HALF_FEED = 66;
-
+    
     private List<Command> commands;
     private Map<Character, String> search;
     private List<Character> searchStack;
@@ -47,7 +42,7 @@ public class Printer extends Command {
         searchStack.clear();
         candidate = null;
     }
-
+    
     private void pushCandidate() {
         commands.add(candidate);
         reset(); // nulls candidate 
