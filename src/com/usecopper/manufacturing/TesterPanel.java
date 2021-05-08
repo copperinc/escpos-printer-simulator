@@ -35,11 +35,12 @@ public class TesterPanel extends javax.swing.JPanel
         port = null;
     }
     
-    private ComboBoxModel getGuiPorts()
+    private ComboBoxModel<String> getGuiPorts()
     {
         var items = new ArrayList<String>();
         
         port_list = SerialPort.getCommPorts();
+//        System.out.println("num ports: " + port_list.length);
         for (var p : port_list) {
             items.add(p.getSystemPortName());
         }
@@ -47,6 +48,17 @@ public class TesterPanel extends javax.swing.JPanel
         return new DefaultComboBoxModel<>(tp);
     }
     
+    /* Rescan ports and repopulate the Gui */
+    private void rescanGuiPorts() {
+        p_ports.setModel(getGuiPorts());
+        if (port == null) {
+            if (p_ports.getItemCount() == 0) {
+                button_openclose.setText("Scan Ports");
+            } else {
+                button_openclose.setText("Open");
+            }
+        }
+    }
     
     /*** IPrinterOutput methods ***/
     
@@ -152,6 +164,10 @@ public class TesterPanel extends javax.swing.JPanel
     private void button_opencloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_opencloseActionPerformed
         if (port == null) {
             var iport = p_ports.getSelectedIndex();
+            if (iport == -1) {
+                rescanGuiPorts();
+                return;
+            }
             var p = port_list[iport];
             
             setupPort(p);
@@ -162,6 +178,8 @@ public class TesterPanel extends javax.swing.JPanel
             p.openPort();
             if (!p.isOpen()) {
                 setText("== Couldn't open port " + p.getSystemPortName() + "\n");
+                rescanGuiPorts();
+                return;
             }           
 
             var pt = new PrinterThread(this, 
@@ -185,7 +203,8 @@ public class TesterPanel extends javax.swing.JPanel
 
             p_baud_rate.setEnabled(true);
             p_ports.setEnabled(true);            
-            button_openclose.setText("Open");            
+            button_openclose.setText("Open");
+            rescanGuiPorts();            
         }
     }//GEN-LAST:event_button_opencloseActionPerformed
 
