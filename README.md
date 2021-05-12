@@ -10,6 +10,17 @@ framing commands from a live host device connected to a serial port.
   of devices
 * Parser fix to improve handling of rejected chars
 
+Note: At higher serial port speeds, the simulator may receive some garbage
+characters at the start of the speed handshake as the fw tries commands at 
+lower serial speeds, those can still be read with inconsistent bytes. In 
+testing so far, the parser has always recovered.
+
+In general, 9600 baud, the first handshake speed the firmware attempts shows
+a clean "provisioning receipt"
+
+
+
+
 ### V0.2.2
 * Parser fixes to recognize two byte cut commands
 * Added test for cut command on provision

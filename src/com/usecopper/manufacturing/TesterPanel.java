@@ -30,12 +30,12 @@ public class TesterPanel extends javax.swing.JPanel
      */
     public TesterPanel() {
         initComponents();
-        
-        button_openclose.setText("Open");
-        port = null;
+
+        port = null;        
+        guiRescanPorts();
     }
     
-    private ComboBoxModel<String> getGuiPorts()
+    private ComboBoxModel<String> guiGetPorts()
     {
         var items = new ArrayList<String>();
         
@@ -49,8 +49,8 @@ public class TesterPanel extends javax.swing.JPanel
     }
     
     /* Rescan ports and repopulate the Gui */
-    private void rescanGuiPorts() {
-        p_ports.setModel(getGuiPorts());
+    private void guiRescanPorts() {
+        p_ports.setModel(guiGetPorts());
         if (port == null) {
             if (p_ports.getItemCount() == 0) {
                 button_openclose.setText("Scan Ports");
@@ -58,6 +58,15 @@ public class TesterPanel extends javax.swing.JPanel
                 button_openclose.setText("Open");
             }
         }
+    }
+    
+    private void guiPrintPortStatus() {
+        if (port == null) {
+            return;
+        }
+        var s_baud = (String)p_baud_rate.getSelectedItem();
+        setText("== Port " + port.getSystemPortName() + " opened at " +
+                    s_baud + "\n");    
     }
     
     /*** IPrinterOutput methods ***/
@@ -77,6 +86,7 @@ public class TesterPanel extends javax.swing.JPanel
     @Override
     public void clearPrinter() {
         txtDisplay.setText("");
+        guiPrintPortStatus();        
     }
     
     /**
@@ -99,13 +109,13 @@ public class TesterPanel extends javax.swing.JPanel
         setFont(new java.awt.Font("Cantarell", 0, 15)); // NOI18N
 
         txtDisplay.setColumns(20);
-        txtDisplay.setFont(new java.awt.Font("DejaVu Sans Mono", 0, 12)); // NOI18N
+        txtDisplay.setFont(new java.awt.Font("DejaVu Sans Mono", 0, 10)); // NOI18N
         txtDisplay.setRows(5);
         jScrollPane1.setViewportView(txtDisplay);
 
         p_baud_rate.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "9600", "19200", "38400" }));
 
-        p_ports.setModel(getGuiPorts());
+        p_ports.setModel(guiGetPorts());
 
         button_openclose.setText("open_close");
         button_openclose.addActionListener(new java.awt.event.ActionListener() {
@@ -156,7 +166,7 @@ public class TesterPanel extends javax.swing.JPanel
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(button_clear)
                 .addGap(22, 22, 22)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 603, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 699, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -165,7 +175,7 @@ public class TesterPanel extends javax.swing.JPanel
         if (port == null) {
             var iport = p_ports.getSelectedIndex();
             if (iport == -1) {
-                rescanGuiPorts();
+                guiRescanPorts();
                 return;
             }
             var p = port_list[iport];
@@ -178,7 +188,7 @@ public class TesterPanel extends javax.swing.JPanel
             p.openPort();
             if (!p.isOpen()) {
                 setText("== Couldn't open port " + p.getSystemPortName() + "\n");
-                rescanGuiPorts();
+                guiRescanPorts();
                 return;
             }           
 
@@ -186,9 +196,9 @@ public class TesterPanel extends javax.swing.JPanel
                 p.getInputStream(), p.getOutputStream()); 
             pt.start();
            
-            setText("== Port " + p.getSystemPortName() + " opened at " +
-                    s_baud + "\n");         
             port = p;
+            guiPrintPortStatus();
+
             printer_thread = pt;
             p_baud_rate.setEnabled(false);
             p_ports.setEnabled(false);
@@ -204,12 +214,12 @@ public class TesterPanel extends javax.swing.JPanel
             p_baud_rate.setEnabled(true);
             p_ports.setEnabled(true);            
             button_openclose.setText("Open");
-            rescanGuiPorts();            
+            guiRescanPorts();            
         }
     }//GEN-LAST:event_button_opencloseActionPerformed
 
     private void button_clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_clearActionPerformed
-        txtDisplay.setText("");
+        clearPrinter();
     }//GEN-LAST:event_button_clearActionPerformed
 
 
