@@ -6,9 +6,11 @@ framing commands from a live host device connected to a serial port.
 ## Version Notes
 
 ### V0.2.3
-* Rescan serial ports on certain gui events to account for plugging/unplugging 
-  of devices
+* Allow rescan for serial ports on certain gui events to account for 
+  plugging/unplugging of devices. Also detect if no ports are found and prompt
+  for scan.
 * Parser fix to improve handling of rejected chars
+* Always output port status if one is open
 
 Note: At higher serial port speeds, the simulator may receive some garbage
 characters at the start of the speed handshake as the fw tries commands at 
@@ -16,9 +18,16 @@ lower serial speeds, those can still be read with inconsistent bytes. In
 testing so far, the parser has always recovered.
 
 In general, 9600 baud, the first handshake speed the firmware attempts shows
-a clean "provisioning receipt"
+a clean "provisioning receipt". If the usb-serial or serial device is connected 
+to the application while powered 9600 might show some garbage too. This has not
+been seen to cause test failure conditions.
 
-
+The application can run continuously between testing devices without a need to
+restart it, or even reopen/close the port. This means you can open the port
+at a given speed, plug in a Cord, power it holding down the button to get
+into provision mode, and watch the test results, then unplug and plug in the 
+next unit. Clicking clear might be desired in between so not confuse between 
+outputs of one unit vs another.
 
 
 ### V0.2.2
