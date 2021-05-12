@@ -5,6 +5,11 @@ framing commands from a live host device connected to a serial port.
 
 ## Version Notes
 
+### V0.2.3
+* Rescan serial ports on certain gui events to account for plugging/unplugging 
+  of devices
+* Parser fix to improve handling of rejected chars
+
 ### V0.2.2
 * Parser fixes to recognize two byte cut commands
 * Added test for cut command on provision

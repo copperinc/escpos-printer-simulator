@@ -49,30 +49,34 @@ public class Printer extends Command {
     }
     
     @Override
-    public boolean addChar(Character c) {
-        searchStack.add(c);
+    public boolean addChar(Character ch) {
+        searchStack.add(ch);
         if (candidate != null) {
-            if (candidate.addChar(c)) {
+            if (candidate.addChar(ch)) {
                 if (candidate.done()) {
                     pushCandidate();
                 }
                 return true;
             } else {
                 // rejected char (mostly for text candidate)
-                pushCandidate();
-                searchStack.add(c); // re-add char
+                if (candidate.done()) {
+                    pushCandidate();
+                } else {
+                    reset();
+                }
+                searchStack.add(ch); // re-add char, pushCand clears search stack
             }
         }
         
-        if (!search.keySet().contains(c)) {
+        if (!search.keySet().contains(ch)) {
             var tc = new TextCommand();
             handleTextCommand(tc);
             candidate = tc;
-            candidate.addChar(c);
+            candidate.addChar(ch);
             return true;
         }
         
-        String type = search.get(c);
+        String type = search.get(ch);
         if (type.indexOf("Arr") > 0) {
             switch (type) {
                 case Command.ESC_COMMAND_ARR:
